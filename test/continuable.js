@@ -5,50 +5,33 @@ var error = require('../sources/error')
 var test = require('tape')
 
 test('continuable stream', function (t) {
-  t.plan(3)
+  t.plan(2)
 
-  var contSink = function (read) {
+  var continuable = function (read) {
     return function (cb) {
-      read(null, function (err, data) {
-        if (err) return cb(err)
-
-        // Simulate some async sink task:
-        setTimeout(function () {
-          cb(null)
-        }, 250)
+      read(null, function (end, data) {
+        if (end === true) return cb(null)
+        if (end) return cb(end)
       })
     }
   }
 
-  var contSinkError = function (read) {
-    return function (cb) {
-      read(null, function (err, data) {
-        if (err) return cb(err)
-        else return cb(null)
-      })
-    }
-  }
-
-  var continuable = pull(
-    values([1, 2, 3, 4, 5]),
+  // With values:
+  pull(
+    values(1, 2, 3, 4, 5),
     map(function (item) {
       return item * 2
     }),
-    contSink
-  )
-
-  t.is(typeof continuable, 'function', 'returns function')
-  continuable(function (err) {
-    t.is(err, null, 'has no error')
-    t.end()
+    continuable
+  )(function (err) {
+    t.is(err, null, 'no error')
   })
 
-  var errContinuable = pull(
+  // With error:
+  pull(
     error(new Error('test error')),
-    contSinkError
-  )
-
-  errContinuable(function (err) {
-    t.is(err.message, 'test error', 'has error')
+    continuable
+  )(function (err) {
+    t.is(err.message, 'test error', 'error')
   })
 })

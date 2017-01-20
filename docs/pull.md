@@ -72,6 +72,32 @@ pull(a, b, a)
 //"pull from a to b and then back to a"
 ```
 
+## Continuable
+
+To know when a sink finishes, or to defer the execution, you can have it return a continuable:
+
+```js
+function sink (read) {
+  return continuable (cb) {
+    read(null, function (err, data) {
+      if (err) return cb(err)
+      // ...
+      cb(null)
+    })
+  }
+}
+```
+
+Then when you use it with `pull`:
+
+```js
+var cont = pull(...streams, sink)
+
+cont(function (err) {
+  // stream finished
+})
+```
+
 ## API
 
 ```js
