@@ -79,10 +79,10 @@ To know when a sink finishes, or to defer the execution, you can have it return 
 ```js
 function sink (read) {
   return continuable (cb) {
-    read(null, function (err, data) {
-      if (err) return cb(err)
-      // ...
-      cb(null)
+    read(null, function (end, data) {
+      if (end === true) return cb(null)
+      if (end) return cb(end)
+
     })
   }
 }
