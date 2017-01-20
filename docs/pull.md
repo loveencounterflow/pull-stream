@@ -78,23 +78,31 @@ To know when a sink finishes, or to defer the execution, you can have it return 
 
 ```js
 function sink (read) {
-  return continuable (cb) {
+  return continuable (done) {
     read(null, function (end, data) {
-      if (end === true) return cb(null)
-      if (end) return cb(end)
-
+      if (end === true) return done(null)
+      if (end) return done(end)
+      // ... otherwise use `data`
     })
   }
 }
 ```
 
-Then when you use it with `pull`:
+Then to use it with `pull`:
 
 ```js
 var cont = pull(...streams, sink)
 
 cont(function (err) {
   // stream finished
+})
+```
+
+Or nice side-by-side calls:
+
+```js
+pull(...streams, sink)(function (err) {
+  // ...
 })
 ```
 
