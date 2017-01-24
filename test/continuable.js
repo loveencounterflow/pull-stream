@@ -1,7 +1,7 @@
 var pull = require('../pull')
-var values = require('../sources/values')
-var map = require('../throughs/map')
+var count = require('../sources/count')
 var error = require('../sources/error')
+var map = require('../throughs/map')
 var test = require('tape')
 
 test('continuable stream', function (t) {
@@ -9,22 +9,23 @@ test('continuable stream', function (t) {
 
   var continuable = function (read) {
     return function (cb) {
-      read(null, function (end, data) {
+      read(null, function  next (end, data) {
         if (end === true) return cb(null)
         if (end) return cb(end)
+        read(end, next)
       })
     }
   }
 
   // With values:
   pull(
-    values(1, 2, 3, 4, 5),
+    count(5),
     map(function (item) {
       return item * 2
     }),
     continuable
   )(function (err) {
-    t.is(err, null, 'no error')
+    t.false(err, 'no error')
   })
 
   // With error:
