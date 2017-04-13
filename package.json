@@ -1,11 +1,11 @@
 {
-  "name": "pull-stream",
+  "name": "x-pull-stream-continuable",
   "description": "minimal pull stream",
-  "version": "3.5.0",
+  "version": "0.3.5",
   "homepage": "https://pull-stream.github.io",
   "repository": {
     "type": "git",
-    "url": "git://github.com/pull-stream/pull-stream.git"
+    "url": "git://github.com/loveencounterflow/pull-stream.git"
   },
   "devDependencies": {
     "fastbench": "^1.0.1",
