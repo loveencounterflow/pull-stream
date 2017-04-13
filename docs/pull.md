@@ -72,6 +72,42 @@ pull(a, b, a)
 //"pull from a to b and then back to a"
 ```
 
+## Continuable
+
+[Continuables](https://github.com/Raynos/continuable) let you handle when a pipeline finishes, or also defer the execution:
+
+```js
+var cont = pull(...streams, sink)
+
+// ...
+
+cont(function (err) {
+  // stream finished
+})
+```
+
+Or nice side-by-side calls:
+
+```js
+pull(...streams, sink)(function (err) {
+  // ...
+})
+```
+
+They are defined inside sink streams by returning a function with a single callback parameter:
+
+```js
+function sink (read) {
+  return continuable (done) {
+    read(null, function (end, data) {
+      if (end === true) return done(null)
+      if (end) return done(end)
+      // ... otherwise use `data`
+    })
+  }
+}
+```
+
 ## API
 
 ```js
